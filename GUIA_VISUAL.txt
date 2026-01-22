@@ -1,0 +1,200 @@
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│         🏢 VENDAS VIVACOR - GUIA DE INSTALAÇÃO             │
+│         Progressive Web App para Condomínios               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════
+  PASSO 1: FIREBASE (firebase.google.com/console)
+═══════════════════════════════════════════════════════════════
+
+  🔥 Criar Projeto
+  ├─ Nome: vendas-vivacor
+  ├─ Analytics: NÃO
+  └─ Criar projeto
+
+  🔑 Authentication
+  ├─ Vamos começar
+  ├─ Sign-in method
+  ├─ Google → Ativar
+  └─ Salvar
+
+  📦 Firestore Database
+  ├─ Criar banco de dados
+  ├─ Modo: Produção
+  ├─ Local: southamerica-east1 (São Paulo)
+  ├─ Regras → COLAR DO README.md
+  └─ Publicar
+
+  🖼️ Storage
+  ├─ Vamos começar
+  ├─ Modo: Produção
+  ├─ Local: southamerica-east1 (São Paulo)
+  ├─ Regras → COLAR DO README.md
+  └─ Publicar
+
+  ⚙️ Configuração do App
+  ├─ Ícone </> (Web)
+  ├─ Apelido: vendas_vivacor
+  ├─ ✅ Firebase Hosting
+  ├─ Registrar app
+  └─ 📋 COPIAR configuração (firebaseConfig)
+
+═══════════════════════════════════════════════════════════════
+  PASSO 2: GITHUB (github.com)
+═══════════════════════════════════════════════════════════════
+
+  📁 Novo Repositório
+  ├─ Nome: vendas_vivacor
+  ├─ Visibilidade: Public
+  ├─ ✅ Add README
+  └─ Create repository
+
+  📤 Upload de Arquivos
+  ├─ Extrair vendas_vivacor.zip
+  ├─ Upload todos os arquivos
+  └─ Commit changes
+
+  🌐 GitHub Pages
+  ├─ Settings → Pages
+  ├─ Source: Deploy from branch
+  ├─ Branch: main / (root)
+  ├─ Save
+  └─ 📝 Anotar URL gerada
+
+═══════════════════════════════════════════════════════════════
+  PASSO 3: CONFIGURAÇÃO DO CÓDIGO
+═══════════════════════════════════════════════════════════════
+
+  ✏️ Editar js/config.js
+  ├─ Abrir arquivo no GitHub
+  ├─ Clicar no lápis (Edit)
+  ├─ Colar firebaseConfig copiado do Passo 1
+  └─ Commit changes
+
+  ⏳ Aguardar Deploy
+  ├─ Esperar 2-3 minutos
+  └─ Acessar URL do GitHub Pages
+
+═══════════════════════════════════════════════════════════════
+  🎉 PRONTO! SEU APP ESTÁ NO AR!
+═══════════════════════════════════════════════════════════════
+
+  🧪 TESTAR:
+
+  Como VENDEDOR:
+    1. Clicar em "Entrar"
+    2. Login com Google
+    3. "Perfil" → Cadastrar WhatsApp (+5511999999999)
+    4. "Publicar" → Adicionar fotos + dados
+    5. Confirmar publicação
+
+  Como COMPRADOR:
+    1. Acessar a home (sem login)
+    2. Clicar em um produto
+    3. "Tenho Interesse"
+    4. Preencher Nome/Torre/Apto
+    5. WhatsApp abre automaticamente
+
+  📱 INSTALAR COMO APP:
+    Android: Chrome → Menu → "Adicionar à tela inicial"
+    iPhone: Safari → Compartilhar → "Tela de Início"
+
+═══════════════════════════════════════════════════════════════
+  📊 ESTRUTURA DO PROJETO
+═══════════════════════════════════════════════════════════════
+
+  vendas_vivacor/
+  ├── index.html              (Página principal)
+  ├── manifest.json           (Config PWA)
+  ├── service-worker.js       (Cache offline)
+  ├── README.md               (Documentação completa)
+  ├── CHECKLIST.md            (Checklist rápido)
+  │
+  ├── css/
+  │   └── styles.css          (Estilos)
+  │
+  └── js/
+      ├── config.js           (⚠️ EDITAR ESTE ARQUIVO!)
+      ├── firebase-init.js    (Inicialização)
+      ├── auth.js             (Autenticação)
+      ├── router.js           (Roteamento)
+      │
+      ├── components/
+      │   ├── home.js         (Vitrine pública)
+      │   ├── pdp.js          (Página do produto)
+      │   ├── login.js        (Login Google)
+      │   ├── profile.js      (Perfil do vendedor)
+      │   ├── my-ads.js       (Meus anúncios)
+      │   ├── create-ad.js    (Criar anúncio)
+      │   └── edit-ad.js      (Editar anúncio)
+      │
+      └── utils/
+          ├── image-compress.js   (Compressão)
+          ├── storage.js          (Upload)
+          └── whatsapp.js         (Link WhatsApp)
+
+═══════════════════════════════════════════════════════════════
+  🔧 FUNCIONALIDADES
+═══════════════════════════════════════════════════════════════
+
+  ✅ Login com Google (vendedores)
+  ✅ Navegação sem login (compradores)
+  ✅ Upload de 1-3 fotos por produto
+  ✅ Compressão automática de imagens
+  ✅ Status: Disponível, Negociação, Vendido, Excluído
+  ✅ Contato direto via WhatsApp
+  ✅ Modal de identificação (salva no localStorage)
+  ✅ Instalável como app (PWA)
+  ✅ Design responsivo (mobile-first)
+  ✅ Suporte a múltiplos condomínios (preparado)
+
+═══════════════════════════════════════════════════════════════
+  🆘 SOLUÇÃO DE PROBLEMAS
+═══════════════════════════════════════════════════════════════
+
+  ❌ Erro ao fazer login
+     → Verificar se Google Auth está ativado no Firebase
+     → Confirmar domínio autorizado no Firebase Console
+
+  ❌ Erro ao publicar anúncio
+     → Verificar se WhatsApp foi cadastrado no Perfil
+     → Conferir regras do Firestore e Storage
+
+  ❌ Fotos não carregam
+     → Verificar regras do Storage (read: if true)
+     → Confirmar que arquivos são menores que 5MB
+
+  ❌ Produtos não aparecem
+     → Verificar status: deve ser "available"
+     → Conferir condoId no produto e no config.js
+     → Verificar regras do Firestore
+
+  ❌ WhatsApp não abre
+     → Verificar formato do número: +5511999999999
+     → Testar em dispositivo com WhatsApp instalado
+
+═══════════════════════════════════════════════════════════════
+  📞 RECURSOS ADICIONAIS
+═══════════════════════════════════════════════════════════════
+
+  📖 Documentação Firebase:
+     → firebase.google.com/docs
+
+  📖 Documentação GitHub Pages:
+     → docs.github.com/pages
+
+  🎨 Personalizar cores:
+     → Editar css/styles.css (linhas 10-20)
+
+  🏢 Adicionar novo condomínio:
+     → Editar js/config.js (linha 14)
+     → Produtos são isolados por condoId
+
+═══════════════════════════════════════════════════════════════
+
+  Desenvolvido com ❤️ para o Condomínio Vivacor
+  Janeiro 2026
+
+═══════════════════════════════════════════════════════════════
