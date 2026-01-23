@@ -2,13 +2,15 @@
 // IMPORTANTE: Substitua os valores abaixo pelos dados do seu projeto Firebase
 
 export const firebaseConfig = {
-  apiKey: "COLE_SUA_API_KEY_AQUI",
+  apiKey: "AIzaSyBsT_Md30X8CgbU277IdEGcjcHINn0kI_8",
   authDomain: "vendas-vivacor.firebaseapp.com",
   projectId: "vendas-vivacor",
-  storageBucket: "vendas-vivacor.appspot.com",
-  messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID",
-  appId: "COLE_SEU_APP_ID"
+  storageBucket: "vendas-vivacor.firebasestorage.app",
+  messagingSenderId: "740825232315",
+  appId: "1:740825232315:web:d1b7c740eea806bf350a9e",
+  measurementId: "G-NDG24PQFXE"
 };
+
 
 // Configuração do condomínio
 export const appConfig = {
