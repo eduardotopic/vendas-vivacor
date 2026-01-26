@@ -1,5 +1,5 @@
 // ===== LOGIN =====
-import { signInWithGoogle } from '../auth.js';
+import { signInWithGoogle, handlePostLoginRedirect } from '../auth.js';
 
 export function renderLogin() {
   const container = document.getElementById('app-content');
@@ -30,10 +30,16 @@ export function renderLogin() {
   // Adicionar event listener
   document.getElementById('btn-google-login').addEventListener('click', async () => {
     try {
-      await signInWithGoogle();
-      window.location.hash = '#/profile';
+      const user = await signInWithGoogle();
+      
+      // ✅ NOVO: Redirecionamento inteligente
+      if (user) {
+        await handlePostLoginRedirect(user);
+      }
+      
     } catch (error) {
       console.error('Erro no login:', error);
+      // Erro já é tratado em signInWithGoogle
     }
   });
 }

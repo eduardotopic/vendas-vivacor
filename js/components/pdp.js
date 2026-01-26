@@ -1,9 +1,11 @@
 // ===== PDP - PÁGINA DO PRODUTO =====
 import { db } from '../firebase-init.js';
 import { appConfig } from '../config.js';
+import { getCurrentUser, showLoading } from '../auth.js';
 import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { showLoading } from '../auth.js';
 import { generateWhatsAppLink } from '../utils/whatsapp.js';
+
+let currentMainImage = 0;
 
 export async function renderPDP(params) {
   const container = document.getElementById('app-content');
@@ -77,6 +79,9 @@ async function loadProduct(productId) {
       </div>
     `;
     
+    // Inicializar galeria
+    initGallery(product.photoUrls);
+    
     // Carregar produtos relacionados
     await loadRelatedProducts(productId);
     
@@ -102,14 +107,56 @@ function renderGallery(photoUrls) {
   }
   
   return `
-    <div class="pdp-gallery" style="margin-bottom: 2rem;">
-      ${photoUrls.map(url => `
-        <img src="${url}" alt="Foto do produto" style="max-width: 100%; border-radius: 8px;" 
-             onerror="this.style.display='none'">
-      `).join('')}
+    <div class="pdp-gallery-container">
+      <img src="${photoUrls[0]}" 
+           alt="Imagem principal" 
+           class="pdp-main-image" 
+           id="pdp-main-image"
+           onerror="this.style.display='none'">
+      
+      ${photoUrls.length > 1 ? `
+        <div class="pdp-thumbnails">
+          ${photoUrls.map((url, index) => `
+            <img src="${url}" 
+                 alt="Miniatura ${index + 1}" 
+                 class="pdp-thumbnail ${index === 0 ? 'active' : ''}" 
+                 data-index="${index}"
+                 onclick="window.changePDPImage(${index})"
+                 onerror="this.style.display='none'">
+          `).join('')}
+        </div>
+      ` : ''}
     </div>
   `;
 }
+
+function initGallery(photoUrls) {
+  if (!photoUrls || photoUrls.length === 0) return;
+  
+  // Salvar URLs globalmente
+  window.pdpPhotoUrls = photoUrls;
+  currentMainImage = 0;
+}
+
+// Função global para trocar imagem principal
+window.changePDPImage = function(index) {
+  const mainImage = document.getElementById('pdp-main-image');
+  const thumbnails = document.querySelectorAll('.pdp-thumbnail');
+  
+  if (mainImage && window.pdpPhotoUrls) {
+    mainImage.src = window.pdpPhotoUrls[index];
+    currentMainImage = index;
+    
+    // Atualizar thumbnails ativos
+    thumbnails.forEach((thumb, i) => {
+      if (i === index) {
+        thumb.classList.add('active');
+      } else {
+        thumb.classList.remove('active');
+      }
+    });
+  }
+};
 
 function renderActionButton(product, productId) {
   if (product.status !== 'available') {
@@ -166,7 +213,7 @@ async function loadRelatedProducts(currentProductId) {
       const firstImage = product.photoUrls?.[0] || '';
       return `
         <div class="card" onclick="window.location.hash='#/product/${product.id}'">
-          <img src="${firstImage}" alt="${product.title}" class="card-img">
+          <img src="${firstImage}" alt="${product.title}" class="card-img" loading="lazy">
           <div class="card-body">
             <h3 class="card-title">${product.title}</h3>
             <p class="card-price">R$ ${parseFloat(product.price).toFixed(2)}</p>
@@ -181,8 +228,39 @@ async function loadRelatedProducts(currentProductId) {
 }
 
 // Handler global para o botão de interesse
-window.handleInterest = function(productId, productTitle, sellerWhatsapp) {
-  // Verificar se já tem dados salvos
+window.handleInterest = async function(productId, productTitle, sellerWhatsapp) {
+  const user = getCurrentUser();
+  
+  // Se estiver logado, tentar buscar dados do perfil
+  if (user) {
+    try {
+      showLoading(true);
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // Se tiver torre e apartamento cadastrados, usar esses dados
+        if (userData.tower && userData.apartment) {
+          const buyerData = {
+            name: userData.displayName || user.displayName,
+            tower: userData.tower,
+            apartment: userData.apartment
+          };
+          
+          openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados do perfil:', error);
+    } finally {
+      showLoading(false);
+    }
+  }
+  
+  // Se não estiver logado ou não tiver torre/apto, verificar localStorage
   const buyerData = localStorage.getItem('buyerData');
   
   if (buyerData) {
@@ -195,11 +273,13 @@ window.handleInterest = function(productId, productTitle, sellerWhatsapp) {
   }
   
   // Mostrar modal para coletar dados
-  showBuyerModal(productId, productTitle, sellerWhatsapp);
+  showBuyerModal(productId, productTitle, sellerWhatsapp, user);
 };
 
-function showBuyerModal(productId, productTitle, sellerWhatsapp) {
+function showBuyerModal(productId, productTitle, sellerWhatsapp, user) {
   const modalContainer = document.getElementById('modal-container');
+  
+  const userName = user ? user.displayName : '';
   
   modalContainer.innerHTML = `
     <div class="modal-overlay">
@@ -212,7 +292,7 @@ function showBuyerModal(productId, productTitle, sellerWhatsapp) {
           <form id="buyer-form">
             <div class="form-group">
               <label class="form-label">Nome Completo</label>
-              <input type="text" class="form-input" id="buyer-name" required>
+              <input type="text" class="form-input" id="buyer-name" value="${userName}" required>
             </div>
             <div class="form-group">
               <label class="form-label">Torre</label>

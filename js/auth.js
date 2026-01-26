@@ -1,5 +1,5 @@
 // ===== AUTENTICAÇÃO =====
-import { auth } from './firebase-init.js';
+import { auth, db } from './firebase-init.js';
 
 // Importar métodos de autenticação do Firebase
 import { 
@@ -8,6 +8,8 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+import { doc, getDoc, collection, query, where, getDocs, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Estado global do usuário
 let currentUser = null;
@@ -19,6 +21,10 @@ const googleProvider = new GoogleAuthProvider();
 export async function signInWithGoogle() {
   try {
     showLoading(true);
+    
+    // NOTA: Os erros "Cross-Origin-Opener-Policy" no console são NORMAIS
+    // do popup do Google Sign-In e NÃO afetam o funcionamento do app.
+    // Não é possível resolver sem backend próprio (GitHub Pages não permite configurar headers HTTP)
     const result = await signInWithPopup(auth, googleProvider);
     currentUser = result.user;
     console.log('✅ Login realizado:', currentUser.displayName);
@@ -58,15 +64,57 @@ export function getCurrentUser() {
   return currentUser;
 }
 
+// Redirecionamento inteligente pós-login
+export async function handlePostLoginRedirect(user) {
+  if (!user) return;
+  
+  try {
+    showLoading(true);
+    
+    // 1. Verificar se tem WhatsApp cadastrado
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (!userDoc.exists() || !userDoc.data().whatsappE164) {
+      // Sem WhatsApp → Perfil
+      window.location.hash = '#/profile';
+      return;
+    }
+    
+    // 2. Verificar se tem produtos publicados
+    const q = query(
+      collection(db, 'products'),
+      where('sellerId', '==', user.uid),
+      limit(1)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      // Com WhatsApp, sem produtos → Home
+      window.location.hash = '#/';
+    } else {
+      // Com WhatsApp e produtos → Meus Anúncios
+      window.location.hash = '#/my-ads';
+    }
+    
+  } catch (error) {
+    console.error('Erro no redirect pós-login:', error);
+    window.location.hash = '#/';
+  } finally {
+    showLoading(false);
+  }
+}
+
 // Atualizar navegação baseado no estado de autenticação
 function updateNavigation(user) {
   const nav = document.getElementById('main-nav');
   
   if (user) {
+    // REMOVIDO: Botão "Publicar" da navbar (agora está em My Ads)
     nav.innerHTML = `
       <a href="#/">Início</a>
       <a href="#/my-ads">Meus Anúncios</a>
-      <a href="#/create-ad">Publicar</a>
       <a href="#/profile">Perfil</a>
       <button id="btn-logout">Sair</button>
     `;

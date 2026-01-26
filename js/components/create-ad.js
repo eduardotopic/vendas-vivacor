@@ -93,7 +93,7 @@ export async function renderCreateAd() {
             </div>
             
             <div style="display: flex; gap: 1rem;">
-              <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+              <button type="button" class="btn btn-secondary" onclick="window.location.hash='#/my-ads'">
                 Cancelar
               </button>
               <button type="submit" class="btn btn-success" style="flex: 1;">
@@ -124,6 +124,26 @@ async function checkUserWhatsApp(userId) {
 
 function handleFileSelect(e) {
   const files = Array.from(e.target.files);
+  
+  // Validar tipo de arquivo
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const invalidFiles = files.filter(file => !validTypes.includes(file.type));
+  
+  if (invalidFiles.length > 0) {
+    alert('❌ Apenas imagens JPG, PNG ou WEBP são aceitas.');
+    e.target.value = '';
+    return;
+  }
+  
+  // Validar tamanho (10MB antes da compressão)
+  const maxSize = 10 * 1024 * 1024;
+  const oversizedFiles = files.filter(file => file.size > maxSize);
+  
+  if (oversizedFiles.length > 0) {
+    alert('❌ Imagens muito grandes. Máximo 10MB por foto.');
+    e.target.value = '';
+    return;
+  }
   
   // Limitar a 3 fotos
   const remainingSlots = 3 - selectedFiles.length;
@@ -229,11 +249,20 @@ async function handleSubmitAd(e) {
     await addDoc(collection(db, 'products'), productData);
     
     alert('✅ Anúncio publicado com sucesso!');
+    
+    // ✅ NOVO: Redirecionar para My Ads (auto-refresh acontece automaticamente)
     window.location.hash = '#/my-ads';
     
   } catch (error) {
     console.error('Erro ao publicar anúncio:', error);
-    alert('❌ Erro ao publicar anúncio. Tente novamente.');
+    
+    if (error.code === 'permission-denied') {
+      alert('❌ Sem permissão. Verifique as regras do Firestore.');
+    } else if (error.code === 'storage/unauthorized') {
+      alert('❌ Erro no upload. Verifique as regras do Storage.');
+    } else {
+      alert(`❌ Erro ao publicar anúncio: ${error.message}`);
+    }
   } finally {
     showLoading(false);
   }

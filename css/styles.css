@@ -187,10 +187,14 @@ body {
     box-shadow: 0 4px 16px var(--shadow);
 }
 
+/* ===== IMAGENS CORRIGIDAS - HOME ===== */
 .card-img {
     width: 100%;
     height: 200px;
     object-fit: cover;
+    object-position: center;
+    aspect-ratio: 4 / 3;
+    background: var(--light-gray);
 }
 
 .card-body {
@@ -465,62 +469,50 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-    #app-header .container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    #main-nav {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1rem;
-    }
-
-    .modal {
-        margin: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .products-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .logo {
-        font-size: 1.2rem;
-    }
-}
-
-/* ===== MAIN CONTENT ===== */
-#app-content {
-    min-height: calc(100vh - 80px);
-    padding: 2rem 0;
-}
-
-/* ===== PDP SPECIFIC ===== */
+/* ===== PDP - GALERIA DE IMAGENS CORRIGIDA ===== */
 .pdp-container {
     max-width: 900px;
     margin: 0 auto;
 }
 
-.pdp-gallery {
-    display: flex;
-    gap: 1rem;
+.pdp-gallery-container {
     margin-bottom: 2rem;
-    overflow-x: auto;
 }
 
-.pdp-gallery img {
-    max-width: 100%;
-    height: auto;
+.pdp-main-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    object-position: center;
+    background: var(--light-gray);
     border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.pdp-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.pdp-thumbnail {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
     cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.pdp-thumbnail:hover {
+    border-color: var(--secondary);
+}
+
+.pdp-thumbnail.active {
+    border-color: var(--primary);
 }
 
 .pdp-info {
@@ -547,4 +539,83 @@ body {
 .related-products h2 {
     margin-bottom: 1.5rem;
     color: var(--primary);
+}
+
+/* ===== MAIN CONTENT ===== */
+#app-content {
+    min-height: calc(100vh - 80px);
+    padding: 2rem 0;
+}
+
+/* ===== BOTÃO PUBLICAR DESTACADO (MY-ADS) ===== */
+.create-ad-cta {
+    background: linear-gradient(135deg, var(--success), #20c997);
+    color: var(--white);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.create-ad-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.create-ad-cta h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.create-ad-cta p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    #app-header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    #main-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1rem;
+    }
+
+    .modal {
+        margin: 1rem;
+    }
+    
+    .pdp-main-image {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .card-img {
+        height: 180px;
+    }
+    
+    .pdp-thumbnail {
+        width: 60px;
+        height: 60px;
+    }
 }

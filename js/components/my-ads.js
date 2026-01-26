@@ -22,7 +22,13 @@ export async function renderMyAds() {
   
   container.innerHTML = `
     <div class="container">
-      <h1 style="color: var(--primary); margin-bottom: 2rem;">Meus Anúncios</h1>
+      <h1 style="color: var(--primary); margin-bottom: 1rem;">Meus Anúncios</h1>
+      
+      <!-- NOVO: Botão Publicar Destacado -->
+      <div class="create-ad-cta" onclick="window.location.hash='#/create-ad'">
+        <h3>📦 Publicar Novo Anúncio</h3>
+        <p>Venda itens infantis para seus vizinhos</p>
+      </div>
       
       <div class="tabs">
         <button class="tab active" data-status="available">Disponíveis</button>
@@ -54,6 +60,14 @@ export async function renderMyAds() {
   
   // Carregar anúncios iniciais
   await loadMyAds(user.uid, currentTab);
+}
+
+// Exportar função para ser chamada externamente (auto-refresh)
+export async function refreshMyAds() {
+  const user = getCurrentUser();
+  if (user) {
+    await loadMyAds(user.uid, currentTab);
+  }
 }
 
 async function loadMyAds(userId, status) {
@@ -125,7 +139,8 @@ function createMyAdCard(id, product) {
     <div class="card">
       <img src="${firstImage || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect fill=\'%23ddd\' width=\'200\' height=\'200\'/%3E%3C/svg%3E'}" 
            alt="${product.title}" 
-           class="card-img">
+           class="card-img"
+           loading="lazy">
       <div class="card-body">
         <h3 class="card-title">${product.title}</h3>
         <p class="card-price">${price}</p>
@@ -204,7 +219,12 @@ window.changeProductStatus = async function(productId, newStatus) {
     
   } catch (error) {
     console.error('Erro ao atualizar status:', error);
-    alert('❌ Erro ao atualizar status. Tente novamente.');
+    
+    if (error.code === 'permission-denied') {
+      alert('❌ Sem permissão. Verifique as regras do Firestore.');
+    } else {
+      alert(`❌ Erro ao atualizar status: ${error.message}`);
+    }
   } finally {
     showLoading(false);
   }

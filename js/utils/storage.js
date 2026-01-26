@@ -1,6 +1,11 @@
 // ===== STORAGE - UPLOAD DE IMAGENS =====
 import { storage } from '../firebase-init.js';
-import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+import { 
+  ref, 
+  uploadBytes, 
+  getDownloadURL,
+  deleteObject  // ✅ CORRIGIDO: Import adicionado
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
 export async function uploadProductImages(files, condoId, userId) {
   const uploadPromises = files.map((file, index) => {
@@ -44,7 +49,7 @@ async function uploadSingleImage(file, condoId, userId, index) {
 export async function deleteProductImage(imageUrl) {
   try {
     const imageRef = ref(storage, imageUrl);
-    await deleteObject(imageRef);
+    await deleteObject(imageRef);  // ✅ Agora funciona corretamente
     console.log('✅ Imagem deletada:', imageUrl);
   } catch (error) {
     console.error('❌ Erro ao deletar imagem:', error);

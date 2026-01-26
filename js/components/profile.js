@@ -48,8 +48,28 @@ export async function renderProfile() {
               </small>
             </div>
             
+            <div class="form-group">
+              <label class="form-label">Torre *</label>
+              <input type="text" 
+                     class="form-input" 
+                     id="tower-input" 
+                     placeholder="Ex: A, B, C, 1, 2..."
+                     maxlength="10"
+                     required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Apartamento *</label>
+              <input type="text" 
+                     class="form-input" 
+                     id="apartment-input" 
+                     placeholder="Ex: 101, 202, 1503..."
+                     maxlength="10"
+                     required>
+            </div>
+            
             <button type="submit" class="btn btn-success btn-block">
-              Salvar WhatsApp
+              Salvar Dados
             </button>
           </form>
         </div>
@@ -57,14 +77,14 @@ export async function renderProfile() {
     </div>
   `;
   
-  // Carregar WhatsApp salvo
-  await loadWhatsApp(user.uid);
+  // Carregar dados salvos
+  await loadUserData(user.uid);
   
   // Adicionar event listener no form
-  document.getElementById('profile-form').addEventListener('submit', handleSaveWhatsApp);
+  document.getElementById('profile-form').addEventListener('submit', handleSaveProfile);
 }
 
-async function loadWhatsApp(userId) {
+async function loadUserData(userId) {
   try {
     const docRef = doc(db, 'users', userId);
     const docSnap = await getDoc(docRef);
@@ -74,21 +94,35 @@ async function loadWhatsApp(userId) {
       if (userData.whatsappE164) {
         document.getElementById('whatsapp-input').value = userData.whatsappE164;
       }
+      if (userData.tower) {
+        document.getElementById('tower-input').value = userData.tower;
+      }
+      if (userData.apartment) {
+        document.getElementById('apartment-input').value = userData.apartment;
+      }
     }
   } catch (error) {
-    console.error('Erro ao carregar WhatsApp:', error);
+    console.error('Erro ao carregar dados do usuário:', error);
   }
 }
 
-async function handleSaveWhatsApp(e) {
+async function handleSaveProfile(e) {
   e.preventDefault();
   
   const user = getCurrentUser();
   const whatsapp = document.getElementById('whatsapp-input').value.trim();
+  const tower = document.getElementById('tower-input').value.trim();
+  const apartment = document.getElementById('apartment-input').value.trim();
   
-  // Validar formato
+  // Validar formato WhatsApp
   if (!whatsapp.match(/^\+[0-9]{10,15}$/)) {
     alert('Por favor, insira o WhatsApp no formato internacional.\nExemplo: +5511999999999');
+    return;
+  }
+  
+  // Validar torre e apartamento
+  if (!tower || !apartment) {
+    alert('Por favor, preencha Torre e Apartamento.');
     return;
   }
   
@@ -101,15 +135,24 @@ async function handleSaveWhatsApp(e) {
       displayName: user.displayName,
       email: user.email,
       whatsappE164: whatsapp,
+      tower: tower,
+      apartment: apartment,
       condoId: appConfig.condoId,
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }, { merge: true });
     
-    alert('✅ WhatsApp salvo com sucesso!');
+    alert('✅ Dados salvos com sucesso!');
     
   } catch (error) {
-    console.error('Erro ao salvar WhatsApp:', error);
-    alert('❌ Erro ao salvar WhatsApp. Tente novamente.');
+    console.error('Erro ao salvar dados:', error);
+    
+    // Mensagens de erro específicas
+    if (error.code === 'permission-denied') {
+      alert('❌ Sem permissão para salvar. Verifique as regras do Firestore.');
+    } else {
+      alert(`❌ Erro ao salvar dados: ${error.message}`);
+    }
   } finally {
     showLoading(false);
   }
