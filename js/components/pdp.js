@@ -6,7 +6,7 @@ import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from '
 import { generateWhatsAppLink } from '../utils/whatsapp.js';
 
 let currentMainImage = 0;
-let currentProductData = null; // ✅ NOVO: Armazenar dados do produto atual
+let currentProductData = null;
 
 export async function renderPDP(params) {
   const container = document.getElementById('app-content');
@@ -51,9 +51,9 @@ async function loadProduct(productId) {
     }
     
     const product = docSnap.data();
-    currentProductData = { id: productId, ...product }; // ✅ NOVO: Armazenar dados
+    currentProductData = { id: productId, ...product };
     
-    // Renderizar produto
+    // ✅ CORRIGIDO: Galeria DENTRO do pdp-info
     pdpContent.innerHTML = `
       <div class="pdp-container">
         <button class="btn btn-secondary mb-2" onclick="window.history.back()">← Voltar</button>
@@ -87,7 +87,7 @@ async function loadProduct(productId) {
       </div>
     `;
     
-    // ✅ NOVO: Adicionar event listener após renderizar
+    // Adicionar event listener após renderizar
     attachInterestButtonListener();
     
     // Inicializar galeria
@@ -117,6 +117,7 @@ function renderGallery(photoUrls) {
     </div>`;
   }
   
+  // ✅ CORRIGIDO: Estrutura mais simples e robusta
   return `
     <div class="pdp-gallery-container">
       <img src="${photoUrls[0]}" 
@@ -169,7 +170,6 @@ window.changePDPImage = function(index) {
   }
 };
 
-// ✅ NOVO: Renderizar botão SEM onclick inline
 function renderActionButton(status) {
   if (status !== 'available') {
     const statusText = {
@@ -187,7 +187,6 @@ function renderActionButton(status) {
     `;
   }
   
-  // ✅ CORRIGIDO: Sem onclick inline, usar ID
   return `
     <button id="btn-interest" class="btn btn-success btn-block" style="margin-top: 2rem; font-size: 1.2rem;">
       💬 Tenho Interesse
@@ -195,7 +194,6 @@ function renderActionButton(status) {
   `;
 }
 
-// ✅ NOVO: Adicionar event listener ao botão
 function attachInterestButtonListener() {
   const btnInterest = document.getElementById('btn-interest');
   
@@ -206,11 +204,10 @@ function attachInterestButtonListener() {
     
     // Adicionar novo listener
     newBtn.addEventListener('click', handleInterestClick);
-    newBtn.addEventListener('touchend', handleInterestClick); // ✅ MOBILE: touchend
+    newBtn.addEventListener('touchend', handleInterestClick);
   }
 }
 
-// ✅ NOVO: Handler do botão de interesse
 async function handleInterestClick(e) {
   e.preventDefault();
   e.stopPropagation();
@@ -348,7 +345,6 @@ function showBuyerModal(productId, productTitle, sellerWhatsapp, user) {
     </div>
   `;
   
-  // ✅ CORRIGIDO: Event listeners ao invés de onclick inline
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
   document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
   document.getElementById('modal-submit-btn').addEventListener('click', () => {
@@ -396,7 +392,7 @@ function openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData) {
   const productUrl = `${window.location.origin}${window.location.pathname}#/product/${productId}`;
   const link = generateWhatsAppLink(sellerWhatsapp, productTitle, productUrl, buyerData);
   
-  // ✅ MOBILE: Usar window.location ao invés de window.open em alguns casos
+  // Detectar mobile
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   
   if (isMobile) {
