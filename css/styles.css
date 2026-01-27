@@ -17,6 +17,7 @@
     --text: #333;
     --white: #fff;
     --shadow: rgba(0, 0, 0, 0.1);
+    --header-height: 80px; /* ✅ NOVO: Altura do header */
 }
 
 body {
@@ -24,6 +25,7 @@ body {
     color: var(--text);
     background-color: var(--light-gray);
     line-height: 1.6;
+    overflow-x: hidden; /* ✅ Previne scroll horizontal */
 }
 
 .container {
@@ -57,6 +59,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
+    height: var(--header-height); /* ✅ NOVO */
 }
 
 #app-header .container {
@@ -469,24 +472,35 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* ===== PDP - GALERIA DE IMAGENS CORRIGIDA ===== */
+/* ===== PDP - CORREÇÃO COMPLETA ===== */
 .pdp-container {
     max-width: 900px;
     margin: 0 auto;
+    position: relative; /* ✅ NOVO */
+    z-index: 1; /* ✅ NOVO: Abaixo do header */
 }
 
 .pdp-gallery-container {
+    width: 100% !important;
+    max-width: 100% !important;
     margin-bottom: 2rem;
+    overflow: hidden !important; /* ✅ Previne overflow */
+    position: relative; /* ✅ NOVO */
 }
 
 .pdp-main-image {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    object-position: center;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 400px !important;
+    object-fit: contain !important;
+    object-position: center !important;
     background: var(--light-gray);
     border-radius: 8px;
-    margin-bottom: 1rem;
+    margin: 0 auto 1rem auto !important;
+    display: block !important;
+    position: relative !important; /* ✅ NOVO: Força position relative */
+    z-index: 1 !important; /* ✅ NOVO: Abaixo do header */
 }
 
 .pdp-thumbnails {
@@ -521,6 +535,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 8px var(--shadow);
     margin-bottom: 2rem;
+    position: relative; /* ✅ NOVO */
 }
 
 .pdp-seller {
@@ -543,8 +558,11 @@ body {
 
 /* ===== MAIN CONTENT ===== */
 #app-content {
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - var(--header-height));
     padding: 2rem 0;
+    margin-top: 0; /* ✅ NOVO: Remove margin-top */
+    position: relative; /* ✅ NOVO */
+    overflow-x: hidden; /* ✅ NOVO: Previne scroll horizontal */
 }
 
 /* ===== BOTÃO PUBLICAR DESTACADO (MY-ADS) ===== */
@@ -597,7 +615,7 @@ body {
     }
     
     .pdp-main-image {
-        max-height: 300px;
+        max-height: 300px !important;
     }
 }
 
@@ -617,5 +635,9 @@ body {
     .pdp-thumbnail {
         width: 60px;
         height: 60px;
+    }
+    
+    .pdp-main-image {
+        max-height: 250px !important;
     }
 }
