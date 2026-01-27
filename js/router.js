@@ -28,6 +28,10 @@ const protectedRoutes = ['/profile', '/my-ads', '/create-ad', '/edit-ad/:id'];
 // Estado do usuário
 let isAuthenticated = false;
 
+// ✅ NOVO: Controlar rota anterior
+let previousRoute = null;
+let currentRoute = null;
+
 // Observar mudanças de autenticação
 onAuthChange((user) => {
   isAuthenticated = !!user;
@@ -44,6 +48,10 @@ export function navigateTo(path) {
 function handleRoute() {
   const hash = window.location.hash.slice(1) || '/';
   const path = hash.split('?')[0]; // Remove query params
+  
+  // ✅ NOVO: Salvar rotas para controlar scroll
+  previousRoute = currentRoute;
+  currentRoute = path;
   
   // Verificar se a rota existe
   let route = routes[path];
@@ -87,7 +95,14 @@ function handleRoute() {
   // Renderizar a rota
   try {
     appContent.innerHTML = '';
-    route(params);
+    
+    // ✅ NOVO: Se voltar para home vindo de PDP, restaurar scroll
+    if (path === '/' && previousRoute && previousRoute.startsWith('/product/')) {
+      route(true); // Passar true para restaurar scroll
+    } else {
+      route(params);
+    }
+    
   } catch (error) {
     console.error('Erro ao renderizar rota:', error);
     appContent.innerHTML = `
