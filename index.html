@@ -19,9 +19,11 @@
     <!-- Header -->
     <header id="app-header">
         <div class="container">
-            <h1 class="logo">Vendas Vivacor</h1>
+            <h1 class="logo" onclick="window.location.hash='#/'">Vendas Vivacor</h1>
             <nav id="main-nav">
-                <!-- Navegação dinâmica -->
+                <!-- Navegação dinâmica será inserida aqui pelo auth.js -->
+                <a href="#/">Início</a>
+                <a href="#/login">Entrar</a>
             </nav>
         </div>
     </header>
@@ -72,24 +74,5 @@
             });
         }
     </script>
-<style>
-  * {
-    position: relative !important;
-    z-index: auto !important;
-  }
-  
-  #app-header {
-    position: sticky !important;
-    z-index: 100 !important;
-  }
-  
-  .pdp-main-image {
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: 400px !important;
-    position: relative !important;
-    z-index: 1 !important;
-  }
-</style>
 </body>
 </html>
