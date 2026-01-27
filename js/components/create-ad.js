@@ -12,6 +12,9 @@ export async function renderCreateAd() {
   const container = document.getElementById('app-content');
   const user = getCurrentUser();
   
+  // ✅ CORRIGIDO: Resetar fotos ao entrar na página
+  selectedFiles = [];
+  
   if (!user) {
     container.innerHTML = `
       <div class="container">
@@ -163,6 +166,8 @@ function handleFileSelect(e) {
 function renderImagePreviews() {
   const uploadArea = document.getElementById('image-upload-area');
   
+  if (!uploadArea) return; // ✅ CORRIGIDO: Verificar se elemento existe
+  
   const previewsHTML = selectedFiles.map((file, index) => {
     const url = URL.createObjectURL(file);
     return `
@@ -188,6 +193,11 @@ function renderImagePreviews() {
 }
 
 window.removeImage = function(index) {
+  // ✅ CORRIGIDO: Revogar URL para liberar memória
+  if (selectedFiles[index]) {
+    URL.revokeObjectURL(URL.createObjectURL(selectedFiles[index]));
+  }
+  
   selectedFiles.splice(index, 1);
   renderImagePreviews();
 };
@@ -248,9 +258,15 @@ async function handleSubmitAd(e) {
     
     await addDoc(collection(db, 'products'), productData);
     
+    // ✅ CORRIGIDO: Limpar fotos após sucesso
+    selectedFiles.forEach(file => {
+      URL.revokeObjectURL(URL.createObjectURL(file));
+    });
+    selectedFiles = [];
+    
     alert('✅ Anúncio publicado com sucesso!');
     
-    // ✅ NOVO: Redirecionar para My Ads (auto-refresh acontece automaticamente)
+    // Redirecionar para My Ads
     window.location.hash = '#/my-ads';
     
   } catch (error) {
