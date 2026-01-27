@@ -5,14 +5,13 @@ import { collection, query, where, orderBy, getDocs } from 'https://www.gstatic.
 import { showLoading } from '../auth.js';
 
 let lastScrollPosition = 0;
+let shouldRestoreScroll = false;
 
-export async function renderHome() {
+export async function renderHome(restoreScroll = false) {
   const container = document.getElementById('app-content');
   
-  // Salvar posição do scroll se estiver voltando
-  if (container.innerHTML) {
-    lastScrollPosition = window.scrollY;
-  }
+  // ✅ NOVO: Controlar quando restaurar scroll
+  shouldRestoreScroll = restoreScroll;
   
   container.innerHTML = `
     <div class="container">
@@ -28,9 +27,14 @@ export async function renderHome() {
   
   await loadProducts();
   
-  // Restaurar scroll
-  if (lastScrollPosition > 0) {
-    window.scrollTo(0, lastScrollPosition);
+  // ✅ CORRIGIDO: Só restaurar scroll se vier de volta (não ao clicar em produto)
+  if (shouldRestoreScroll && lastScrollPosition > 0) {
+    setTimeout(() => {
+      window.scrollTo(0, lastScrollPosition);
+    }, 100);
+  } else {
+    // Se não for restaurar, scroll para o topo
+    window.scrollTo(0, 0);
   }
 }
 
@@ -91,7 +95,6 @@ function createProductCard(id, product) {
   
   const price = product.price ? `R$ ${parseFloat(product.price).toFixed(2)}` : 'Preço não informado';
   
-  // ✅ NOVO: Usar função global para navegar com scroll
   return `
     <div class="card" onclick="window.navigateToProduct('${id}')">
       <img src="${firstImage}" 
@@ -113,8 +116,11 @@ function truncateText(text, maxLength) {
   return text.substring(0, maxLength) + '...';
 }
 
-// ✅ NOVO: Função global para navegar com scroll automático
+// Função global para navegar com scroll automático
 window.navigateToProduct = function(productId) {
+  // ✅ SALVAR posição atual do scroll antes de navegar
+  lastScrollPosition = window.scrollY;
+  
   // Scroll para o topo antes de navegar
   window.scrollTo({
     top: 0,
