@@ -1,115 +1,781 @@
-/* ===== FIX ADICIONAL - IMAGEM PDP NO NAVEGADOR ===== */
+/* ========================================
+   VENDAS VIVACOR - CSS COMPLETO
+   Versão: 2.0 - Correção Total de Imagens
+   ======================================== */
 
-/* Garantir que o container do PDP respeite limites */
+/* ===== 1. VARIÁVEIS CSS ===== */
+:root {
+  /* Cores principais */
+  --primary: #1e3a5f;
+  --secondary: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --success: #27ae60;
+  
+  /* Cores neutras */
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --medium-gray: #ddd;
+  --dark-gray: #666;
+  --text-dark: #333;
+  --shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Dimensões */
+  --header-height: 60px;
+  --border-radius: 8px;
+  --max-content-width: 1200px;
+}
+
+/* ===== 2. RESET E BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background-color: var(--light-gray);
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  min-height: 100vh;
+}
+
+/* ===== 3. HEADER E NAVEGAÇÃO ===== */
+#app-header {
+  background: var(--primary);
+  color: var(--white);
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--header-height);
+}
+
+#app-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--white);
+}
+
+#main-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+#main-nav a {
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+#main-nav a:hover {
+  opacity: 0.8;
+}
+
+/* ===== 4. CONTAINERS PRINCIPAIS ===== */
+.container {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#app-content {
+  min-height: calc(100vh - var(--header-height));
+  padding: 2rem 0;
+  margin-top: 0 !important;
+  position: relative;
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* ===== 5. GRID DE PRODUTOS (HOME) ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* ===== 6. CARDS DE PRODUTOS ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== 7. IMAGENS DOS CARDS (HOME) - REGRAS CRÍTICAS ===== */
+.card-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 200px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  background: var(--light-gray);
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.card-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.card-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--success);
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  color: var(--dark-gray);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ===== 8. PDP - CONTAINER PRINCIPAL ===== */
 .pdp-container {
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-    width: 100%; /* ✅ NOVO */
-    overflow: hidden; /* ✅ NOVO: Prevenir overflow */
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: hidden;
 }
 
-/* pdp-info deve conter tudo */
 .pdp-info {
-    background: var(--white);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px var(--shadow);
-    margin-bottom: 2rem;
-    position: relative;
-    width: 100%; /* ✅ NOVO */
-    max-width: 100%; /* ✅ NOVO */
-    overflow: hidden; /* ✅ NOVO */
-    box-sizing: border-box; /* ✅ NOVO */
+  background: var(--white);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px var(--shadow);
+  margin-bottom: 2rem;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Galeria deve respeitar o container pai */
+/* ===== 9. GALERIA PDP - CONTAINER ===== */
 .pdp-gallery-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-bottom: 2rem;
-    overflow: hidden !important;
-    position: relative;
-    box-sizing: border-box; /* ✅ NOVO */
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-bottom: 2rem;
+  overflow: hidden !important;
+  position: relative;
+  box-sizing: border-box;
 }
 
-/* Imagem principal - regras ultra-específicas */
+/* ===== 10. IMAGEM PRINCIPAL PDP - REGRAS ULTRA-ESPECÍFICAS ===== */
+.pdp-main-image,
 .pdp-info .pdp-gallery-container .pdp-main-image,
 img.pdp-main-image,
 #pdp-main-image {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: 400px !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    background: var(--light-gray);
-    border-radius: 8px;
-    margin: 0 auto 1rem auto !important;
-    display: block !important;
-    position: relative !important;
-    z-index: 1 !important;
-    box-sizing: border-box !important; /* ✅ NOVO */
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 400px !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background: var(--light-gray);
+  border-radius: var(--border-radius);
+  margin: 0 auto 1rem auto !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 1 !important;
+  box-sizing: border-box !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
-/* Container principal do app - prevenir scroll horizontal */
-#app-content {
-    min-height: calc(100vh - var(--header-height));
-    padding: 2rem 0;
-    margin-top: 0 !important;
-    position: relative;
-    overflow-x: hidden !important; /* ✅ IMPORTANTE */
-    width: 100%; /* ✅ NOVO */
-    max-width: 100vw; /* ✅ NOVO */
+/* ===== 11. THUMBNAILS PDP ===== */
+.pdp-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  width: 100%;
 }
 
-/* Container geral */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    width: 100%; /* ✅ NOVO */
-    box-sizing: border-box; /* ✅ NOVO */
+.pdp-thumbnail {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover !important;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.2s;
+  background: var(--light-gray);
 }
 
-/* Body também prevenir overflow */
-body {
-    overflow-x: hidden !important; /* ✅ NOVO */
-    max-width: 100vw; /* ✅ NOVO */
+.pdp-thumbnail:hover {
+  transform: scale(1.05);
 }
 
-/* HTML root */
-html {
-    overflow-x: hidden !important; /* ✅ NOVO */
-    max-width: 100vw; /* ✅ NOVO */
+.pdp-thumbnail.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(30, 58, 95, 0.3);
 }
 
-/* Responsive - Mobile */
+/* ===== 12. INFORMAÇÕES DO VENDEDOR ===== */
+.pdp-seller {
+  padding: 1rem;
+  background: var(--light-gray);
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+}
+
+/* ===== 13. PRODUTOS RELACIONADOS ===== */
+.related-products {
+  margin-top: 3rem;
+}
+
+.related-products h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* ===== 14. BOTÕES ===== */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: #162d47;
+}
+
+.btn-secondary {
+  background: var(--medium-gray);
+  color: var(--text-dark);
+}
+
+.btn-secondary:hover {
+  background: #ccc;
+}
+
+.btn-success {
+  background: var(--success);
+  color: var(--white);
+}
+
+.btn-success:hover {
+  background: #229954;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--white);
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.btn-block {
+  width: 100%;
+  display: block;
+}
+
+/* ===== 15. FORMULÁRIOS ===== */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ===== 16. UPLOAD DE IMAGENS ===== */
+.image-upload-container {
+  margin-bottom: 1.5rem;
+}
+
+.image-preview {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 2px solid var(--medium-gray);
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: var(--danger);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 17. LOADING ===== */
+#loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#loading.hidden {
+  display: none;
+}
+
+.spinner {
+  border: 4px solid var(--light-gray);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 18. MODAIS ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--medium-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  color: var(--primary);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--dark-gray);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--medium-gray);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* ===== 19. ESTADOS VAZIOS ===== */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-text {
+  font-size: 1.2rem;
+  color: var(--dark-gray);
+  margin-bottom: 1rem;
+}
+
+/* ===== 20. BADGES DE STATUS ===== */
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-available {
+  background: var(--success);
+  color: var(--white);
+}
+
+.status-negotiation {
+  background: var(--warning);
+  color: var(--white);
+}
+
+.status-sold {
+  background: var(--dark-gray);
+  color: var(--white);
+}
+
+.status-deleted {
+  background: var(--danger);
+  color: var(--white);
+}
+
+/* ===== 21. UTILIDADES ===== */
+.text-center {
+  text-align: center;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== 22. RESPONSIVIDADE - TABLET ===== */
 @media (max-width: 768px) {
-    .pdp-info {
-        padding: 1.5rem;
-    }
-    
-    .pdp-main-image {
-        max-height: 300px !important;
-    }
+  :root {
+    --header-height: 55px;
+  }
+  
+  .logo {
+    font-size: 1.3rem;
+  }
+  
+  #main-nav {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+  .card-img {
+    height: 180px !important;
+  }
+  
+  .pdp-info {
+    padding: 1.5rem;
+  }
+  
+  .pdp-main-image {
+    max-height: 300px !important;
+  }
+  
+  .pdp-thumbnail {
+    width: 70px !important;
+    height: 70px !important;
+  }
 }
 
+/* ===== 23. RESPONSIVIDADE - MOBILE ===== */
 @media (max-width: 480px) {
-    .pdp-info {
-        padding: 1rem;
-    }
-    
-    .pdp-main-image {
-        max-height: 250px !important;
-    }
+  :root {
+    --header-height: 50px;
+  }
+  
+  .logo {
+    font-size: 1.1rem;
+  }
+  
+  #main-nav {
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  #app-content {
+    padding: 1rem 0;
+  }
+  
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .card-img {
+    height: 200px !important;
+  }
+  
+  .pdp-info {
+    padding: 1rem;
+  }
+  
+  .pdp-main-image {
+    max-height: 250px !important;
+  }
+  
+  .pdp-thumbnail {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .modal {
+    max-width: 95%;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
 }
 
-/* Fix para simulação mobile no DevTools */
+/* ===== 24. PWA - DISPOSITIVOS TOUCH REAIS ===== */
 @media (hover: none) and (pointer: coarse) {
-    /* Dispositivo touch real */
-    .pdp-main-image {
-        max-height: 350px !important;
-    }
+  /* Ajustes específicos para dispositivos touch */
+  .card:active {
+    transform: scale(0.98);
+  }
+  
+  .btn:active {
+    transform: scale(0.97);
+  }
+  
+  .pdp-main-image {
+    max-height: 350px !important;
+  }
+  
+  /* Melhorar área de toque */
+  .pdp-thumbnail {
+    width: 75px !important;
+    height: 75px !important;
+    margin: 0.25rem;
+  }
+  
+  /* Aumentar área de toque dos botões */
+  .btn {
+    min-height: 44px;
+  }
+}
+
+/* ===== 25. STANDALONE PWA ===== */
+@media (display-mode: standalone) {
+  /* Quando instalado como PWA */
+  #app-header {
+    padding-top: calc(env(safe-area-inset-top) + 1rem);
+  }
+  
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ===== 26. LANDSCAPE MOBILE ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .pdp-main-image {
+    max-height: 250px !important;
+  }
+  
+  .card-img {
+    height: 150px !important;
+  }
+}
+
+/* ===== 27. NAVEGADOR REDUZIDO (TESTE RESPONSIVO) ===== */
+@media (min-width: 481px) and (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .card-img {
+    height: 180px !important;
+  }
+}
+
+/* ===== 28. IMPRESSÃO ===== */
+@media print {
+  #app-header,
+  .btn,
+  .modal-overlay {
+    display: none;
+  }
+  
+  .pdp-thumbnails {
+    display: none;
+  }
+  
+  .pdp-main-image {
+    max-height: none !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* ===== 29. DARK MODE SUPPORT (PREPARADO) ===== */
+@media (prefers-color-scheme: dark) {
+  /* Manter tema claro por enquanto, mas preparado para dark mode */
+}
+
+/* ===== 30. REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
