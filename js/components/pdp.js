@@ -106,6 +106,7 @@ function renderGallery(photoUrls) {
     </div>`;
   }
   
+  // ✅ CORRIGIDO: Estilos inline MÍNIMOS (deixar CSS fazer o trabalho)
   return `
     <div class="pdp-gallery-container">
       <img src="${photoUrls[0]}" 
