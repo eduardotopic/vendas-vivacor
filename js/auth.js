@@ -110,8 +110,14 @@ export async function handlePostLoginRedirect(user) {
 function updateNavigation(user) {
   const nav = document.getElementById('main-nav');
   
+  // ✅ CORRIGIDO: Verificar se elemento existe antes de atualizar
+  if (!nav) {
+    console.warn('Elemento #main-nav não encontrado');
+    return;
+  }
+  
   if (user) {
-    // REMOVIDO: Botão "Publicar" da navbar (agora está em My Ads)
+    // Usuário logado - REMOVIDO: Botão "Publicar" (agora está em My Ads)
     nav.innerHTML = `
       <a href="#/">Início</a>
       <a href="#/my-ads">Meus Anúncios</a>
@@ -119,8 +125,13 @@ function updateNavigation(user) {
       <button id="btn-logout">Sair</button>
     `;
     
-    document.getElementById('btn-logout')?.addEventListener('click', signOut);
+    // Adicionar event listener no botão de logout
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', signOut);
+    }
   } else {
+    // Usuário NÃO logado
     nav.innerHTML = `
       <a href="#/">Início</a>
       <a href="#/login">Entrar</a>
@@ -131,10 +142,12 @@ function updateNavigation(user) {
 // Utilitário: Mostrar/esconder loading
 function showLoading(show) {
   const loading = document.getElementById('loading');
-  if (show) {
-    loading.classList.remove('hidden');
-  } else {
-    loading.classList.add('hidden');
+  if (loading) {
+    if (show) {
+      loading.classList.remove('hidden');
+    } else {
+      loading.classList.add('hidden');
+    }
   }
 }
 
