@@ -2,16 +2,17 @@
 import { db } from '../firebase-init.js';
 import { appConfig } from '../config.js';
 import { getCurrentUser, showLoading } from '../auth.js';
-import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { doc, getDoc, updateDoc, collection, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { generateWhatsAppLink } from '../utils/whatsapp.js';
 
 let currentMainImage = 0;
+let currentProductData = null;
 
 export async function renderPDP(params) {
   const container = document.getElementById('app-content');
   const productId = params.id;
   
-  // ✅ NOVO: Scroll para o topo ao carregar nova PDP
+  // Scroll para o topo ao carregar nova PDP
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
@@ -30,6 +31,7 @@ export async function renderPDP(params) {
 
 async function loadProduct(productId) {
   const pdpContent = document.getElementById('pdp-content');
+  const user = getCurrentUser();
   
   try {
     showLoading(true);
@@ -50,11 +52,17 @@ async function loadProduct(productId) {
     }
     
     const product = docSnap.data();
+    currentProductData = { id: docSnap.id, ...product };
+    
+    // ✅ NOVO: Verificar se o usuário é o dono do produto
+    const isOwner = user && user.uid === product.sellerId;
     
     // Renderizar produto
     pdpContent.innerHTML = `
       <div class="pdp-container">
         <button class="btn btn-secondary mb-2" onclick="window.history.back()">← Voltar</button>
+        
+        ${isOwner ? renderOwnerControls(productId, product.status) : ''}
         
         <div class="pdp-info">
           ${renderGallery(product.photoUrls)}
@@ -75,7 +83,7 @@ async function loadProduct(productId) {
             <strong>Vendedor:</strong> ${product.sellerName || 'Anônimo'}
           </div>
           
-          ${renderActionButton(product, productId)}
+          ${!isOwner ? renderActionButton(product, productId) : ''}
         </div>
         
         <div class="related-products" id="related-products">
@@ -104,6 +112,95 @@ async function loadProduct(productId) {
     showLoading(false);
   }
 }
+
+// ✅ NOVO: Renderizar controles do dono
+function renderOwnerControls(productId, currentStatus) {
+  return `
+    <div class="card" style="padding: 1.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+      <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">
+        🛠️ Gerenciar Anúncio
+      </h3>
+      
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+        ${currentStatus !== 'available' ? `
+          <button class="btn btn-success" onclick="window.updateProductStatus('${productId}', 'available')" style="flex: 1; min-width: 150px;">
+            ✅ Marcar Disponível
+          </button>
+        ` : ''}
+        
+        ${currentStatus !== 'negotiation' ? `
+          <button class="btn btn-secondary" onclick="window.updateProductStatus('${productId}', 'negotiation')" style="flex: 1; min-width: 150px; background: #ffc107; color: #000;">
+            💬 Em Negociação
+          </button>
+        ` : ''}
+        
+        ${currentStatus !== 'sold' ? `
+          <button class="btn" onclick="window.updateProductStatus('${productId}', 'sold')" style="flex: 1; min-width: 150px; background: #17a2b8; color: white;">
+            ✅ Marcar Vendido
+          </button>
+        ` : ''}
+        
+        ${currentStatus !== 'deleted' ? `
+          <button class="btn btn-danger" onclick="window.updateProductStatus('${productId}', 'deleted')" style="flex: 1; min-width: 150px;">
+            🗑️ Excluir
+          </button>
+        ` : ''}
+      </div>
+      
+      <button class="btn btn-primary" onclick="window.location.hash='#/edit-ad/${productId}'" style="width: 100%;">
+        ✏️ Editar Anúncio
+      </button>
+      
+      <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--dark-gray); text-align: center;">
+        Status atual: <strong><span class="status-badge status-${currentStatus}">${getStatusText(currentStatus)}</span></strong>
+      </p>
+    </div>
+  `;
+}
+
+function getStatusText(status) {
+  return {
+    'available': 'Disponível',
+    'negotiation': 'Em Negociação',
+    'sold': 'Vendido',
+    'deleted': 'Excluído'
+  }[status] || status;
+}
+
+// ✅ NOVO: Função global para atualizar status na PDP
+window.updateProductStatus = async function(productId, newStatus) {
+  const statusText = getStatusText(newStatus);
+  
+  if (!confirm(`Deseja marcar este anúncio como "${statusText}"?`)) {
+    return;
+  }
+  
+  try {
+    showLoading(true);
+    
+    const docRef = doc(db, 'products', productId);
+    await updateDoc(docRef, {
+      status: newStatus,
+      updatedAt: new Date().toISOString()
+    });
+    
+    alert(`✅ Status atualizado para "${statusText}"!`);
+    
+    // Recarregar página para mostrar novo status
+    location.reload();
+    
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error);
+    
+    if (error.code === 'permission-denied') {
+      alert('❌ Sem permissão. Verifique as regras do Firestore.');
+    } else {
+      alert(`❌ Erro ao atualizar: ${error.message}`);
+    }
+  } finally {
+    showLoading(false);
+  }
+};
 
 function renderGallery(photoUrls) {
   if (!photoUrls || photoUrls.length === 0) {
