@@ -11,6 +11,12 @@ export async function renderPDP(params) {
   const container = document.getElementById('app-content');
   const productId = params.id;
   
+  // ✅ NOVO: Scroll para o topo ao carregar nova PDP
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+  
   container.innerHTML = `
     <div class="container">
       <div id="pdp-content">
@@ -106,7 +112,6 @@ function renderGallery(photoUrls) {
     </div>`;
   }
   
-  // ✅ CORRIGIDO: Estilos inline MÍNIMOS (deixar CSS fazer o trabalho)
   return `
     <div class="pdp-gallery-container">
       <img src="${photoUrls[0]}" 
