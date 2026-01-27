@@ -91,8 +91,9 @@ function createProductCard(id, product) {
   
   const price = product.price ? `R$ ${parseFloat(product.price).toFixed(2)}` : 'Preço não informado';
   
+  // ✅ NOVO: Usar função global para navegar com scroll
   return `
-    <div class="card" onclick="window.location.hash='#/product/${id}'">
+    <div class="card" onclick="window.navigateToProduct('${id}')">
       <img src="${firstImage}" 
            alt="${product.title}" 
            class="card-img" 
@@ -111,3 +112,17 @@ function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + '...';
 }
+
+// ✅ NOVO: Função global para navegar com scroll automático
+window.navigateToProduct = function(productId) {
+  // Scroll para o topo antes de navegar
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+  
+  // Pequeno delay para a animação de scroll
+  setTimeout(() => {
+    window.location.hash = `#/product/${productId}`;
+  }, 100);
+};
