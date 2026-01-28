@@ -4,6 +4,13 @@ import { appConfig } from '../config.js';
 import { getCurrentUser, showLoading } from '../auth.js';
 import { doc, getDoc, collection, query, where, orderBy, limit, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { generateWhatsAppLink } from '../utils/whatsapp.js';
+import { 
+  trackViewProduct, 
+  trackInterestClick, 
+  trackWhatsAppOpened,
+  trackStatusChanged,
+  trackPageView
+} from '../analytics.js';
 
 let currentMainImage = 0;
 let currentProductData = null;
@@ -52,6 +59,10 @@ async function loadProduct(productId) {
     
     const product = docSnap.data();
     currentProductData = { id: productId, ...product };
+    
+    // ✅ ANALYTICS: Rastrear visualização do produto
+    trackViewProduct(productId, product);
+    trackPageView(`/#/product/${productId}`, `Produto - ${product.title || 'Sem título'}`);
     
     // ✅ NOVO: Verificar se o usuário logado é o dono
     const currentUser = getCurrentUser();
@@ -196,6 +207,14 @@ async function updateProductStatus(newStatus, oldStatus, selector) {
     // Atualizar dados locais
     currentProductData.status = newStatus;
     
+    // ✅ ANALYTICS: Rastrear mudança de status
+    trackStatusChanged(
+      currentProductData.id,
+      oldStatus,
+      newStatus,
+      currentProductData.createdAt
+    );
+    
     // ✅ CORREÇÃO: Aguardar 500ms antes do reload para garantir persistência da sessão
     // Isso previne logout durante alterações rápidas de múltiplos produtos
     setTimeout(() => {
@@ -324,6 +343,9 @@ async function handleInterestClick(e) {
   
   const { id: productId, title: productTitle, sellerWhatsappE164: sellerWhatsapp } = currentProductData;
   
+  // ✅ ANALYTICS: Rastrear clique no botão "Tenho Interesse"
+  trackInterestClick(productId, currentProductData);
+  
   const user = getCurrentUser();
   
   // Se estiver logado, tentar buscar dados do perfil
@@ -344,7 +366,7 @@ async function handleInterestClick(e) {
             apartment: userData.apartment
           };
           
-          openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData);
+          openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData, 'saved');
           return;
         }
       }
@@ -362,7 +384,7 @@ async function handleInterestClick(e) {
     const data = JSON.parse(buyerData);
     // Confirmar dados
     if (confirm(`Confirma seus dados?\n\nNome: ${data.name}\nTorre: ${data.tower}\nApto: ${data.apartment}`)) {
-      openWhatsApp(productTitle, productId, sellerWhatsapp, data);
+      openWhatsApp(productTitle, productId, sellerWhatsapp, data, 'saved');
       return;
     }
   }
@@ -493,12 +515,15 @@ function submitBuyerForm(productId, productTitle, sellerWhatsapp) {
   closeModal();
   
   // Abrir WhatsApp
-  openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData);
+  openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData, 'new');
 }
 
-function openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData) {
+function openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData, dataSource = 'new') {
   const productUrl = `${window.location.origin}${window.location.pathname}#/product/${productId}`;
   const link = generateWhatsAppLink(sellerWhatsapp, productTitle, productUrl, buyerData);
+  
+  // ✅ ANALYTICS: Rastrear abertura do WhatsApp
+  trackWhatsAppOpened(productId, dataSource);
   
   // Detectar mobile
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);

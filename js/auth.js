@@ -1,5 +1,6 @@
 // ===== AUTENTICAÇÃO =====
 import { auth, db } from './firebase-init.js';
+import { trackSignUp, trackLogin } from './analytics.js';
 
 // Importar métodos de autenticação do Firebase
 import { 
@@ -9,7 +10,7 @@ import {
   onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-import { doc, getDoc, collection, query, where, getDocs, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { doc, getDoc, collection, query, where, getDocs, limit, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // Estado global do usuário
 let currentUser = null;
@@ -27,6 +28,28 @@ export async function signInWithGoogle() {
     // Não é possível resolver sem backend próprio (GitHub Pages não permite configurar headers HTTP)
     const result = await signInWithPopup(auth, googleProvider);
     currentUser = result.user;
+    
+    // ✅ ANALYTICS: Verificar se é novo usuário ou login existente
+    const userDocRef = doc(db, 'users', currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+    
+    if (!userDoc.exists()) {
+      // Novo usuário - primeiro login
+      trackSignUp('Google');
+      console.log('📊 Analytics: Sign up tracked');
+      
+      // Criar documento básico do usuário (sem sobrescrever se já existir)
+      await setDoc(userDocRef, {
+        displayName: currentUser.displayName,
+        email: currentUser.email,
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    } else {
+      // Usuário existente - login
+      trackLogin('Google');
+      console.log('📊 Analytics: Login tracked');
+    }
+    
     console.log('✅ Login realizado:', currentUser.displayName);
     return currentUser;
   } catch (error) {

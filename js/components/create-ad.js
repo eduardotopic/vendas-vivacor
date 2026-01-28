@@ -5,12 +5,16 @@ import { appConfig } from '../config.js';
 import { collection, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { compressImage } from '../utils/image-compress.js';
 import { uploadProductImages } from '../utils/storage.js';
+import { trackCreateAd, trackPageView } from '../analytics.js';
 
 let selectedFiles = [];
 
 export async function renderCreateAd() {
   const container = document.getElementById('app-content');
   const user = getCurrentUser();
+  
+  // ✅ ANALYTICS: Rastrear acesso à página de criar anúncio
+  trackPageView('/#/create-ad', 'Criar Anúncio');
   
   // ✅ CORRIGIDO: Resetar fotos ao entrar na página
   selectedFiles = [];
@@ -257,6 +261,9 @@ async function handleSubmitAd(e) {
     };
     
     await addDoc(collection(db, 'products'), productData);
+    
+    // ✅ ANALYTICS: Rastrear criação de anúncio
+    trackCreateAd(productData);
     
     // ✅ CORRIGIDO: Limpar fotos após sucesso
     selectedFiles.forEach(file => {
