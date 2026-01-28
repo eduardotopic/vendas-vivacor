@@ -196,18 +196,11 @@ async function updateProductStatus(newStatus, oldStatus, selector) {
     // Atualizar dados locais
     currentProductData.status = newStatus;
     
-    // Feedback visual
-    const messages = {
-      'available': 'Anúncio disponível novamente! ✅',
-      'negotiation': 'Status alterado para "Em Negociação" 🤝',
-      'sold': 'Anúncio marcado como vendido! ✔️',
-      'deleted': 'Anúncio excluído! 🗑️'
-    };
-    
-    alert(messages[newStatus]);
-    
-    // Recarregar a página para atualizar a interface
-    window.location.reload();
+    // ✅ CORREÇÃO: Aguardar 500ms antes do reload para garantir persistência da sessão
+    // Isso previne logout durante alterações rápidas de múltiplos produtos
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
     
   } catch (error) {
     console.error('Erro ao atualizar status:', error);
@@ -215,9 +208,9 @@ async function updateProductStatus(newStatus, oldStatus, selector) {
     
     // Reverter seleção em caso de erro
     selector.value = oldStatus;
-  } finally {
     showLoading(false);
   }
+  // ✅ IMPORTANTE: Não chamar showLoading(false) aqui pois vai recarregar
 }
 
 function renderGallery(photoUrls) {
