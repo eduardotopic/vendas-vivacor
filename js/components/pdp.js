@@ -2,7 +2,7 @@
 import { db } from '../firebase-init.js';
 import { appConfig } from '../config.js';
 import { getCurrentUser, showLoading } from '../auth.js';
-import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { doc, getDoc, collection, query, where, orderBy, limit, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { generateWhatsAppLink } from '../utils/whatsapp.js';
 
 let currentMainImage = 0;
@@ -53,10 +53,13 @@ async function loadProduct(productId) {
     const product = docSnap.data();
     currentProductData = { id: productId, ...product };
     
-    // ✅ CORRIGIDO: Galeria DENTRO do pdp-info
+    // ✅ NOVO: Verificar se o usuário logado é o dono
+    const currentUser = getCurrentUser();
+    const isOwner = currentUser && currentUser.uid === product.sellerId;
+    
     pdpContent.innerHTML = `
       <div class="pdp-container">
-        <button class="btn btn-secondary mb-2" onclick="window.history.back()">← Voltar</button>
+        ${renderTopBar(isOwner, product.status)}
         
         <div class="pdp-info">
           ${renderGallery(product.photoUrls)}
@@ -77,7 +80,7 @@ async function loadProduct(productId) {
             <strong>Vendedor:</strong> ${product.sellerName || 'Anônimo'}
           </div>
           
-          ${renderActionButton(product.status)}
+          ${renderActionButton(product.status, isOwner)}
         </div>
         
         <div class="related-products" id="related-products">
@@ -86,6 +89,11 @@ async function loadProduct(productId) {
         </div>
       </div>
     `;
+    
+    // ✅ NOVO: Adicionar listener do seletor de status se for o dono
+    if (isOwner) {
+      attachStatusChangeListener();
+    }
     
     // Adicionar event listener após renderizar
     attachInterestButtonListener();
@@ -110,6 +118,108 @@ async function loadProduct(productId) {
   }
 }
 
+// ✅ NOVA FUNÇÃO: Renderizar barra superior com botão voltar e seletor de status
+function renderTopBar(isOwner, currentStatus) {
+  if (!isOwner) {
+    // Se não for o dono, apenas botão voltar
+    return `
+      <div class="pdp-top-bar">
+        <button class="btn btn-secondary" onclick="window.history.back()">← Voltar</button>
+      </div>
+    `;
+  }
+  
+  // Se for o dono, mostrar botão voltar + seletor de status
+  const statusOptions = [
+    { value: 'available', label: '✅ Disponível', class: 'status-available' },
+    { value: 'negotiation', label: '🤝 Em Negociação', class: 'status-negotiation' },
+    { value: 'sold', label: '✔️ Vendido', class: 'status-sold' },
+    { value: 'deleted', label: '🗑️ Excluído', class: 'status-deleted' }
+  ];
+  
+  return `
+    <div class="pdp-top-bar">
+      <button class="btn btn-secondary" onclick="window.history.back()">← Voltar</button>
+      
+      <div class="status-selector-container">
+        <label class="status-selector-label">Status do Anúncio:</label>
+        <select id="status-selector" class="status-selector">
+          ${statusOptions.map(option => `
+            <option value="${option.value}" ${currentStatus === option.value ? 'selected' : ''}>
+              ${option.label}
+            </option>
+          `).join('')}
+        </select>
+      </div>
+    </div>
+  `;
+}
+
+// ✅ NOVA FUNÇÃO: Adicionar listener de mudança de status
+function attachStatusChangeListener() {
+  const statusSelector = document.getElementById('status-selector');
+  
+  if (statusSelector) {
+    statusSelector.addEventListener('change', async (e) => {
+      const newStatus = e.target.value;
+      const oldStatus = currentProductData.status;
+      
+      // Mensagens de confirmação personalizadas
+      const confirmMessages = {
+        'available': 'Tornar este anúncio disponível novamente?',
+        'negotiation': 'Marcar este anúncio como "Em Negociação"?',
+        'sold': 'Marcar este anúncio como "Vendido"?\n\nEle não aparecerá mais na home.',
+        'deleted': 'Excluir este anúncio?\n\nEle não aparecerá mais na home.'
+      };
+      
+      if (confirm(confirmMessages[newStatus])) {
+        await updateProductStatus(newStatus, oldStatus, statusSelector);
+      } else {
+        // Reverter seleção se cancelar
+        statusSelector.value = oldStatus;
+      }
+    });
+  }
+}
+
+// ✅ NOVA FUNÇÃO: Atualizar status no Firestore
+async function updateProductStatus(newStatus, oldStatus, selector) {
+  try {
+    showLoading(true);
+    
+    const productRef = doc(db, 'products', currentProductData.id);
+    await updateDoc(productRef, {
+      status: newStatus,
+      updatedAt: new Date()
+    });
+    
+    // Atualizar dados locais
+    currentProductData.status = newStatus;
+    
+    // Feedback visual
+    const messages = {
+      'available': 'Anúncio disponível novamente! ✅',
+      'negotiation': 'Status alterado para "Em Negociação" 🤝',
+      'sold': 'Anúncio marcado como vendido! ✔️',
+      'deleted': 'Anúncio excluído! 🗑️'
+    };
+    
+    alert(messages[newStatus]);
+    
+    // Recarregar a página para atualizar a interface
+    window.location.reload();
+    
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error);
+    alert('Erro ao atualizar status. Tente novamente.');
+    
+    // Reverter seleção em caso de erro
+    selector.value = oldStatus;
+  } finally {
+    showLoading(false);
+  }
+}
+
 function renderGallery(photoUrls) {
   if (!photoUrls || photoUrls.length === 0) {
     return `<div style="text-align: center; padding: 2rem; background: var(--light-gray); border-radius: 8px; margin-bottom: 2rem;">
@@ -117,7 +227,6 @@ function renderGallery(photoUrls) {
     </div>`;
   }
   
-  // ✅ CORRIGIDO: Estrutura mais simples e robusta
   return `
     <div class="pdp-gallery-container">
       <img src="${photoUrls[0]}" 
@@ -170,7 +279,13 @@ window.changePDPImage = function(index) {
   }
 };
 
-function renderActionButton(status) {
+// ✅ MODIFICADO: Não mostrar botão de interesse se for o dono
+function renderActionButton(status, isOwner) {
+  // Se for o dono, não mostrar botão de interesse
+  if (isOwner) {
+    return '';
+  }
+  
   if (status !== 'available') {
     const statusText = {
       'negotiation': 'Em Negociação',
