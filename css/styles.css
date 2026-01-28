@@ -1000,3 +1000,180 @@ img.pdp-main-image,
   /* .status-selector { ... } */
 }
 
+/* ===== BOTÃO PUBLICAR NOVO ANÚNCIO (MY-ADS) ===== */
+
+/* Container principal do CTA */
+.create-ad-cta {
+  background: linear-gradient(135deg, var(--success) 0%, #229954 100%);
+  color: var(--white);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  text-align: center;
+  border: 3px solid transparent;
+}
+
+.create-ad-cta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.create-ad-cta:active {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.35);
+}
+
+.create-ad-cta h3 {
+  font-size: 1.8rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.create-ad-cta p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.95;
+  font-weight: 500;
+  color: var(--white);
+}
+
+/* ===== TABS DE FILTRO (MY-ADS) ===== */
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--medium-gray);
+  padding-bottom: 0.5rem;
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--dark-gray);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  position: relative;
+}
+
+.tab:hover {
+  background: var(--light-gray);
+  color: var(--primary);
+}
+
+.tab.active {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary);
+}
+
+/* ===== RESPONSIVIDADE - CREATE AD CTA ===== */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .create-ad-cta {
+    padding: 1.5rem;
+  }
+  
+  .create-ad-cta h3 {
+    font-size: 1.5rem;
+  }
+  
+  .create-ad-cta p {
+    font-size: 1rem;
+  }
+  
+  .tabs {
+    gap: 0.25rem;
+  }
+  
+  .tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .create-ad-cta {
+    padding: 1.25rem;
+  }
+  
+  .create-ad-cta h3 {
+    font-size: 1.3rem;
+  }
+  
+  .create-ad-cta p {
+    font-size: 0.95rem;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab {
+    flex: 1 1 calc(50% - 0.25rem);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+}
+
+/* PWA - Touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .create-ad-cta {
+    min-height: 100px;
+    padding: 1.5rem;
+  }
+  
+  .tab {
+    min-height: 44px;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+/* ===== ANIMAÇÕES ===== */
+
+/* Pulse sutil no CTA para chamar atenção */
+@keyframes pulse-cta {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.5);
+  }
+}
+
+.create-ad-cta {
+  animation: pulse-cta 3s ease-in-out infinite;
+}
+
+.create-ad-cta:hover {
+  animation: none;
+}
+
+/* Desabilitar animação se usuário prefere reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .create-ad-cta {
+    animation: none;
+  }
+}
