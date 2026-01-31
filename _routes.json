@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "description": "Rotas do Cloudflare Worker para Vendas Vivacor",
+  "include": [
+    "/product/*"
+  ],
+  "exclude": [
+    "/*.js",
+    "/*.css",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.gif",
+    "/*.webp",
+    "/*.svg",
+    "/*.json",
+    "/*.html",
+    "/*.ico",
+    "/*.woff",
+    "/*.woff2",
+    "/*.ttf",
+    "/js/*",
+    "/css/*",
+    "/images/*",
+    "/assets/*"
+  ]
+}
