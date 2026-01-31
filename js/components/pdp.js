@@ -254,6 +254,7 @@ function renderGallery(photoUrls) {
                  alt="Miniatura ${index + 1}" 
                  class="pdp-thumbnail ${index === 0 ? 'active' : ''}" 
                  data-index="${index}"
+                 onclick="window.changePDPImage(${index})"
                  onerror="this.style.display='none'">
           `).join('')}
         </div>
@@ -263,40 +264,27 @@ function renderGallery(photoUrls) {
 }
 
 function initGallery(photoUrls) {
-  if (!photoUrls || photoUrls.length <= 1) return;
+  if (!photoUrls || photoUrls.length === 0) return;
   
+  // Salvar URLs globalmente
+  window.pdpPhotoUrls = photoUrls;
+  currentMainImage = 0;
+}
+
+// Função global para trocar imagem principal
+window.changePDPImage = function(index) {
   const mainImage = document.getElementById('pdp-main-image');
   const thumbnails = document.querySelectorAll('.pdp-thumbnail');
   
-  thumbnails.forEach((thumb, index) => {
-    thumb.addEventListener('click', () => {
-      // Atualizar imagem principal
-      mainImage.src = photoUrls[index];
-      currentMainImage = index;
-      
-      // Atualizar miniaturas ativas
-      thumbnails.forEach(t => {
-        t.classList.remove('active');
-      });
-      thumb.classList.add('active');
-    });
+  if (mainImage && window.pdpPhotoUrls) {
+    mainImage.src = window.pdpPhotoUrls[index];
+    currentMainImage = index;
     
-    // Adicionar touchend para mobile
-    thumb.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      mainImage.src = photoUrls[index];
-      currentMainImage = index;
-      
-      thumbnails.forEach(t => {
-        t.classList.remove('active');
-      });
-      thumb.classList.add('active');
-    });
-    
-    // Prevenir duplicação de eventos
-    thumb.addEventListener('mousedown', (e) => {
-      if (e.button === 0) {
-        thumbnails.forEach(t => {
+    // Atualizar thumbnails ativos
+    thumbnails.forEach((thumb, i) => {
+      if (i === index) {
+        thumb.classList.add('active');
+      } else {
         thumb.classList.remove('active');
       }
     });
@@ -530,10 +518,9 @@ function submitBuyerForm(productId, productTitle, sellerWhatsapp) {
   openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData, 'new');
 }
 
-// ✅ FUNÇÃO CORRIGIDA: Agora passa productId ao invés de productUrl
 function openWhatsApp(productTitle, productId, sellerWhatsapp, buyerData, dataSource = 'new') {
-  // ✅ MUDANÇA CRÍTICA: Passar productId (3º parâmetro) ao invés de productUrl
-  const link = generateWhatsAppLink(sellerWhatsapp, productTitle, productId, buyerData);
+  const productUrl = `${window.location.origin}${window.location.pathname}#/product/${productId}`;
+  const link = generateWhatsAppLink(sellerWhatsapp, productTitle, productUrl, buyerData);
   
   // ✅ ANALYTICS: Rastrear abertura do WhatsApp
   trackWhatsAppOpened(productId, dataSource);
