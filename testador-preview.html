@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testador de Preview WhatsApp - Vendas Vivacor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e3a5f 0%, #2c5f8d 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #1e3a5f;
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    
+    .test-section {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #1e3a5f;
+    }
+    
+    .test-section h2 {
+      color: #1e3a5f;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .input-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #1e3a5f;
+      box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+    }
+    
+    button {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    
+    button:hover {
+      background: #2c5f8d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .result {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .result.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .result.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .result.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .url-display {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 2px solid #1e3a5f;
+      margin-top: 1rem;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    
+    .tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .tool-link {
+      display: block;
+      padding: 1rem;
+      background: white;
+      border: 2px solid #1e3a5f;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #1e3a5f;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .tool-link:hover {
+      background: #1e3a5f;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Testador de Preview WhatsApp</h1>
+    <p class="subtitle">Valide se seu Cloudflare Worker está funcionando corretamente</p>
+    
+    <!-- Teste 1: Verificar Meta Tags -->
+    <div class="test-section">
+      <h2>1️⃣ Verificar Meta Tags</h2>
+      <div class="input-group">
+        <label for="productId">ID do Produto:</label>
+        <input 
+          type="text" 
+          id="productId" 
+          placeholder="Ex: QWiafrkSAnSqzgbmCeke"
+          value="QWiafrkSAnSqzgbmCeke"
+        >
+      </div>
+      <button onclick="checkMetaTags()">
+        <span id="btn1-text">Verificar Meta Tags</span>
+      </button>
+      <div id="result1"></div>
+    </div>
+    
+    <!-- Teste 2: Simular Bot do WhatsApp -->
+    <div class="test-section">
+      <h2>2️⃣ Simular Bot do WhatsApp</h2>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+        Testa se o Worker detecta corretamente requisições de bots
+      </p>
+      <button onclick="simulateBot()">
+        <span id="btn2-text">Simular Bot do WhatsApp</span>
+      </button>
+      <div id="result2"></div>
+    </div>
+    
+    <!-- Teste 3: Gerar URLs -->
+    <div class="test-section">
+      <h2>3️⃣ Gerar URLs de Compartilhamento</h2>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+        URLs corretas para compartilhar no WhatsApp
+      </p>
+      <button onclick="generateUrls()">Gerar URLs</button>
+      <div id="result3"></div>
+    </div>
+    
+    <!-- Ferramentas Externas -->
+    <div class="test-section">
+      <h2>4️⃣ Ferramentas de Validação</h2>
+      <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">
+        Use estas ferramentas oficiais para validar os previews
+      </p>
+      <div class="tools">
+        <a 
+          href="https://developers.facebook.com/tools/debug/" 
+          target="_blank" 
+          class="tool-link"
+        >
+          🔧 Facebook Debugger
+        </a>
+        <a 
+          href="https://cards-dev.twitter.com/validator" 
+          target="_blank" 
+          class="tool-link"
+        >
+          🐦 Twitter Validator
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const BASE_URL = 'https://eduardotopic.github.io/vendas-vivacor';
+    
+    function getProductId() {
+      return document.getElementById('productId').value.trim();
+    }
+    
+    function showLoading(buttonId) {
+      const btn = document.getElementById(buttonId);
+      btn.innerHTML = '<span class="loading"></span>Carregando...';
+      btn.disabled = true;
+    }
+    
+    function hideLoading(buttonId, text) {
+      const btn = document.getElementById(buttonId);
+      btn.innerHTML = text;
+      btn.disabled = false;
+    }
+    
+    async function checkMetaTags() {
+      const productId = getProductId();
+      if (!productId) {
+        alert('Por favor, insira um ID de produto');
+        return;
+      }
+      
+      showLoading('btn1-text');
+      const resultDiv = document.getElementById('result1');
+      resultDiv.innerHTML = '';
+      
+      try {
+        const url = `${BASE_URL}/product/${productId}`;
+        const response = await fetch(url);
+        const html = await response.text();
+        
+        // Extrair meta tags
+        const ogTitle = html.match(/<meta property="og:title" content="([^"]+)"/)?.[1];
+        const ogDescription = html.match(/<meta property="og:description" content="([^"]+)"/)?.[1];
+        const ogImage = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+        
+        if (ogTitle && ogImage) {
+          resultDiv.className = 'result success';
+          resultDiv.innerHTML = `✅ Meta tags encontradas!
+
+📌 Título: ${ogTitle}
+📝 Descrição: ${ogDescription}
+🖼️  Imagem: ${ogImage}
+
+URL testada: ${url}`;
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.innerHTML = `❌ Meta tags não encontradas!
+
+Possíveis problemas:
+- Worker não está ativo no Cloudflare
+- Produto não existe no Firebase
+- Configuração incorreta
+
+URL testada: ${url}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = `❌ Erro ao buscar página: ${error.message}`;
+      }
+      
+      hideLoading('btn1-text', 'Verificar Meta Tags');
+    }
+    
+    async function simulateBot() {
+      const productId = getProductId();
+      if (!productId) {
+        alert('Por favor, insira um ID de produto');
+        return;
+      }
+      
+      showLoading('btn2-text');
+      const resultDiv = document.getElementById('result2');
+      resultDiv.innerHTML = '';
+      
+      try {
+        const url = `${BASE_URL}/product/${productId}`;
+        
+        // Fazer requisição com User-Agent de bot
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'WhatsApp/2.0'
+          }
+        });
+        
+        const html = await response.text();
+        const hasOgTags = html.includes('og:title') && html.includes('og:image');
+        
+        if (hasOgTags) {
+          resultDiv.className = 'result success';
+          resultDiv.innerHTML = `✅ Worker detectou bot corretamente!
+
+O Cloudflare Worker está respondendo com HTML contendo Open Graph tags.
+
+Isso significa que quando o WhatsApp acessar seu link, ele vai conseguir ler os metadados e exibir o preview bonito!`;
+        } else {
+          resultDiv.className = 'result error';
+          resultDiv.innerHTML = `❌ Worker não detectou bot
+
+O Worker pode não estar configurado corretamente ou não está sendo executado para esta rota.
+
+Verifique:
+1. Worker está ativo no Cloudflare?
+2. Rota /product/* está configurada?
+3. Código do worker foi atualizado?`;
+        }
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.innerHTML = `❌ Erro: ${error.message}`;
+      }
+      
+      hideLoading('btn2-text', 'Simular Bot do WhatsApp');
+    }
+    
+    function generateUrls() {
+      const productId = getProductId();
+      if (!productId) {
+        alert('Por favor, insira um ID de produto');
+        return;
+      }
+      
+      const resultDiv = document.getElementById('result3');
+      
+      const shareUrl = `${BASE_URL}/product/${productId}`;
+      const internalUrl = `${BASE_URL}/#/product/${productId}`;
+      
+      resultDiv.className = 'result info';
+      resultDiv.innerHTML = `
+<strong>📤 URL para Compartilhamento (WhatsApp, Facebook, etc):</strong>
+<div class="url-display">${shareUrl}</div>
+
+<strong>🔗 URL para Navegação Interna (SPA):</strong>
+<div class="url-display">${internalUrl}</div>
+
+<strong>💡 Como usar:</strong>
+• Use a URL de compartilhamento ao criar botões de "Compartilhar"
+• O Cloudflare Worker intercepta essa URL quando vem de um bot
+• Gera HTML com meta tags para preview rico
+• Redireciona usuários normais para a URL com # (SPA)
+      `;
+      
+      // Adicionar botões de copiar
+      setTimeout(() => {
+        const copyBtn1 = document.createElement('button');
+        copyBtn1.innerHTML = '📋 Copiar URL de Compartilhamento';
+        copyBtn1.onclick = () => {
+          navigator.clipboard.writeText(shareUrl);
+          copyBtn1.innerHTML = '✅ Copiado!';
+          setTimeout(() => {
+            copyBtn1.innerHTML = '📋 Copiar URL de Compartilhamento';
+          }, 2000);
+        };
+        
+        const copyBtn2 = document.createElement('button');
+        copyBtn2.innerHTML = '📋 Copiar URL Interna';
+        copyBtn2.onclick = () => {
+          navigator.clipboard.writeText(internalUrl);
+          copyBtn2.innerHTML = '✅ Copiado!';
+          setTimeout(() => {
+            copyBtn2.innerHTML = '📋 Copiar URL Interna';
+          }, 2000);
+        };
+        
+        resultDiv.appendChild(copyBtn1);
+        resultDiv.appendChild(copyBtn2);
+      }, 100);
+    }
+  </script>
+</body>
+</html>
