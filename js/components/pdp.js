@@ -292,16 +292,8 @@ function initGallery(photoUrls) {
       });
       thumb.classList.add('active');
     });
-    
-    // Prevenir duplicação de eventos
-    thumb.addEventListener('mousedown', (e) => {
-      if (e.button === 0) {
-        thumbnails.forEach(t => {
-        thumb.classList.remove('active');
-      }
-    });
-  }
-};
+  });
+}
 
 // ✅ MODIFICADO: Não mostrar botão de interesse se for o dono
 function renderActionButton(status, isOwner) {
