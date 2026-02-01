@@ -6,6 +6,7 @@ import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.
 import { ref, deleteObject } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 import { compressImage } from '../utils/image-compress.js';
 import { uploadProductImages } from '../utils/storage.js';
+import { showSuccess, showError, showWarning } from '../utils/toast.js';
 
 let currentProduct = null;
 let currentPhotoUrls = [];
@@ -184,7 +185,7 @@ function handleFileSelect(e) {
   const filesToAdd = files.slice(0, remainingSlots);
   
   if (files.length > remainingSlots) {
-    alert(`Você pode ter no máximo 3 fotos. ${remainingSlots} espaço(s) disponível(is).`);
+    showWarning(`Você pode ter no máximo 3 fotos. ${remainingSlots} espaço(s) disponível(is).`);
   }
   
   newFiles = [...newFiles, ...filesToAdd];
@@ -198,10 +199,10 @@ function renderImagePreviews() {
   
   // Previews das fotos existentes
   const existingHTML = currentPhotoUrls.map((url, index) => `
-    <div class="image-preview">
+    <div class="image-preview-item">
       <img src="${url}" alt="Foto ${index + 1}">
       <button type="button" 
-              class="image-preview-remove" 
+              class="image-remove" 
               onclick="window.removeExistingImage(${index})">
         ×
       </button>
@@ -212,10 +213,10 @@ function renderImagePreviews() {
   const newHTML = newFiles.map((file, index) => {
     const url = URL.createObjectURL(file);
     return `
-      <div class="image-preview">
+      <div class="image-preview-item">
         <img src="${url}" alt="Nova foto ${index + 1}">
         <button type="button" 
-                class="image-preview-remove" 
+                class="image-remove" 
                 onclick="window.removeNewImage(${index})">
           ×
         </button>
@@ -235,10 +236,9 @@ function renderImagePreviews() {
 }
 
 window.removeExistingImage = function(index) {
-  if (confirm('Deseja remover esta foto?')) {
-    currentPhotoUrls.splice(index, 1);
-    renderImagePreviews();
-  }
+  currentPhotoUrls.splice(index, 1);
+  renderImagePreviews();
+  showSuccess('Foto removida');
 };
 
 window.removeNewImage = function(index) {
@@ -254,7 +254,7 @@ async function handleSubmitEdit(e) {
   // Validar fotos
   const totalImages = currentPhotoUrls.length + newFiles.length;
   if (totalImages === 0) {
-    alert('Por favor, mantenha pelo menos 1 foto.');
+    showError('Por favor, mantenha pelo menos 1 foto.');
     return;
   }
   
@@ -264,7 +264,7 @@ async function handleSubmitEdit(e) {
   const status = document.getElementById('status-input').value;
   
   if (!title || price < 0) {
-    alert('Por favor, preencha todos os campos obrigatórios.');
+    showError('Por favor, preencha todos os campos obrigatórios.');
     return;
   }
   
@@ -299,12 +299,16 @@ async function handleSubmitEdit(e) {
       updatedAt: new Date().toISOString()
     });
     
-    alert('✅ Anúncio atualizado com sucesso!');
-    window.location.hash = '#/my-ads';
+    showSuccess('Anúncio atualizado com sucesso!');
+    
+    // Aguardar toast aparecer antes de redirecionar
+    setTimeout(() => {
+      window.location.hash = '#/my-ads';
+    }, 1000);
     
   } catch (error) {
     console.error('Erro ao atualizar anúncio:', error);
-    alert('❌ Erro ao atualizar anúncio. Tente novamente.');
+    showError('Erro ao atualizar anúncio. Tente novamente.');
   } finally {
     showLoading(false);
   }

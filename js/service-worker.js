@@ -1,35 +1,9 @@
-// ✅ ATUALIZAR VERSÃO PARA FORÇAR LIMPEZA DE CACHE
-const CACHE_NAME = 'vendas-vivacor-v3'; // ← MUDOU DE v1 PARA v3
-const urlsToCache = [
-  './',
-  './index.html',
-  './css/styles.css',
-  './manifest.json',
-  './js/config.js',
-  './js/firebase-init.js',
-  './js/auth.js',
-  './js/router.js',
-  './js/components/home.js',
-  './js/components/pdp.js',
-  './js/components/login.js',
-  './js/components/profile.js',
-  './js/components/my-ads.js',
-  './js/components/create-ad.js',
-  './js/components/edit-ad.js',
-  './js/utils/image-compress.js',
-  './js/utils/storage.js',
-  './js/utils/whatsapp.js'
-];
+// ✅ Service Worker Simplificado - Sem cache pré-carregado
+const CACHE_NAME = 'vendas-vivacor-v4';
 
-// Install
+// Install - Não pré-cacheia nada, evita erros
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache aberto:', CACHE_NAME);
-        return cache.addAll(urlsToCache);
-      })
-  );
+  console.log('Service Worker instalado');
   // Força o novo service worker a ativar imediatamente
   self.skipWaiting();
 });
